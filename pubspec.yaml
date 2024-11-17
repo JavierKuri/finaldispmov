@@ -70,6 +70,16 @@ flutter:
    - assets/banderavietnam.webp
    - assets/banderajapon.webp
    - assets/banderalibano.webp
+   - assets/imagencanada.jpg
+   - assets/imagenhungria.jpg
+   - assets/imagenjapon.jpg
+   - assets/imagenlibano.jpg
+   - assets/imagenpolonia.jpg
+   - assets/imagenusa.jpg
+   - assets/imagenvenezuela.jpg
+   - assets/imagenvietnam.png
+   - assets/imagencolombia.png
+   - assets/imagenmexico.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
