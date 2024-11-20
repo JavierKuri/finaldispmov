@@ -136,7 +136,8 @@ class MyHomePageState extends State<MyHomePage> {
           child: ListView(
             children: <Widget>[
               for(int i=0;i<contenido.length;i++)
-                buildListTile(context, contenido[i], i)
+                buildListTile(context, contenido[i], i),
+              buildFormListTile(context),
             ],
           )
         )
@@ -235,5 +236,170 @@ class CountryPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Widget buildFormListTile(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: ListTile(
+      title: const Text("Formulario"),
+      subtitle: const Text("Click para ir al formulario"),
+      leading: const Icon(Icons.add_card_rounded , size: 50),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FormPage()))
+    )
+  );
+}
+
+class FormPage extends StatefulWidget {
+  @override
+  FormPageState createState() => FormPageState();
+}
+
+class FormPageState extends State<FormPage> {
+  late TextEditingController nameController, countryController, phoneController, ageController, dateController;
+  late String resultado;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    countryController = TextEditingController();
+    phoneController = TextEditingController();
+    ageController = TextEditingController();
+    dateController = TextEditingController();
+    resultado = "";
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    countryController.dispose();
+    phoneController.dispose();
+    ageController.dispose();
+    dateController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(title: const Text("Formulario para futuro viaje")),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                buildNameField(),
+                buildCountryField(),
+                buildPhoneField(),
+                buildAgeField(),
+                buildDateField(),
+                buildResultArea()
+              ],
+            )
+          )
+        )
+      )
+    );
+  }
+
+  Widget buildNameField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+      child: TextField(
+        controller: nameController,
+        decoration: const InputDecoration(labelText: "Nombre"),
+        keyboardType: TextInputType.text,
+      )
+    );
+  }
+  Widget buildCountryField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+      child: TextField(
+        controller: countryController,
+        decoration: const InputDecoration(labelText: "País que quieres visitar"),
+        keyboardType: TextInputType.text,
+      )
+    );
+  }
+  Widget buildPhoneField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+      child: TextField(
+        controller: phoneController,
+        decoration: const InputDecoration(labelText: "Número telefónico"),
+        keyboardType: TextInputType.phone,
+      )
+    );
+  }
+  Widget buildAgeField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+      child: TextField(
+        controller: ageController,
+        decoration: const InputDecoration(labelText: "Edad"),
+        keyboardType: TextInputType.number,
+      )
+    );
+  }
+  Widget buildDateField() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+      child: TextField(
+        controller: dateController,
+        decoration: const InputDecoration(labelText: "Fecha tentativa de salida"),
+        keyboardType: TextInputType.datetime,
+      )
+    );
+  }
+  Widget buildResultArea() {
+  return Column(
+    children: <Widget>[
+      ElevatedButton(
+        onPressed: () {
+          updateResults();
+          showResultModal();
+        },
+        child: const Text("Submit"),
+      ),
+    ],
+  );
+}
+
+void showResultModal() {
+  showDialog(
+    context: context, 
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Resultado"),
+        content: Text(
+          resultado,
+          textAlign: TextAlign.center,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); 
+            },
+            child: const Text("Cerrar"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  void updateResults() {
+    setState(() {
+      resultado = "Nombre: " + nameController.text + "\n" + "Edad: " + ageController.text + "\n"  + "Teléfono: " + phoneController.text + "\n"+ "País por visitar: " + countryController.text + "\n" + "Fecha tentativa: " + dateController.text;
+      nameController.text = "";
+      countryController.text = "";
+      phoneController.text = "";
+      ageController.text = "";
+      dateController.text = "";
+    });
   }
 }
