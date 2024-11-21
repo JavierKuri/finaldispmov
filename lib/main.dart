@@ -245,7 +245,7 @@ Widget buildFormListTile(BuildContext context) {
     child: ListTile(
       title: const Text("Formulario"),
       subtitle: const Text("Click para ir al formulario"),
-      leading: const Icon(Icons.add_card_rounded , size: 50),
+      leading: const Icon(Icons.airplane_ticket_rounded , size: 50),
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FormPage()))
     )
   );
@@ -256,9 +256,11 @@ class FormPage extends StatefulWidget {
   FormPageState createState() => FormPageState();
 }
 
-class FormPageState extends State<FormPage> {
+class FormPageState extends State<FormPage> with SingleTickerProviderStateMixin{
   late TextEditingController nameController, countryController, phoneController, ageController, dateController;
   late String resultado;
+  late Animation<double> animation;
+  late AnimationController controller;
 
   @override
   void initState() {
@@ -269,6 +271,11 @@ class FormPageState extends State<FormPage> {
     ageController = TextEditingController();
     dateController = TextEditingController();
     resultado = "";
+    controller = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this
+    );
+    animation = getAnimation(controller) as Animation<double>;
   }
 
   @override
@@ -278,11 +285,12 @@ class FormPageState extends State<FormPage> {
     phoneController.dispose();
     ageController.dispose();
     dateController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Formulario para futuro viaje")),
       body: SafeArea(
@@ -290,18 +298,34 @@ class FormPageState extends State<FormPage> {
           padding: const EdgeInsets.all(8.0),
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 buildNameField(),
                 buildCountryField(),
                 buildPhoneField(),
                 buildAgeField(),
                 buildDateField(),
-                buildResultArea()
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => controller.forward(),
+                  child: const Text("Avanzar"),
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => controller.reset(),
+                  child: const Text("Reiniciar"),
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () => controller.reverse(),
+                  child: const Text("Regresar"),
+                ),
+                buildResultArea(), 
               ],
-            )
-          )
-        )
-      )
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -355,26 +379,26 @@ class FormPageState extends State<FormPage> {
       )
     );
   }
+
   Widget buildResultArea() {
-  return Column(
-    children: <Widget>[
-      ElevatedButton(
+    return Padding(
+      padding: EdgeInsets.only(top: animation.value), 
+      child: ElevatedButton(
         onPressed: () {
           updateResults();
           showResultModal();
         },
         child: const Text("Submit"),
       ),
-    ],
-  );
-}
+    );
+  }
 
 void showResultModal() {
   showDialog(
     context: context, 
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("Resultado"),
+        title: const Center(child:Text("Resultado")),
         content: Text(
           resultado,
           textAlign: TextAlign.center,
@@ -384,7 +408,7 @@ void showResultModal() {
             onPressed: () {
               Navigator.of(context).pop(); 
             },
-            child: const Text("Cerrar"),
+            child: const Text("Enviar"),
           ),
         ],
       );
@@ -400,6 +424,14 @@ void showResultModal() {
       phoneController.text = "";
       ageController.text = "";
       dateController.text = "";
+    });
+  }
+
+  Animation getAnimation(AnimationController controller) {
+    return Tween<double>(begin: 10.0, end: 200.0).animate(
+      CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn)
+    )..addListener(() {
+      setState(() {});
     });
   }
 }
